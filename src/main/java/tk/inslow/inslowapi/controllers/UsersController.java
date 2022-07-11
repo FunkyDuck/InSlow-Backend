@@ -9,17 +9,22 @@ import tk.inslow.inslowapi.services.UsersServices;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/user")
+//@RequestMapping("/user")
 public class UsersController {
     @Autowired
     private UsersServices usersServices;
     @Autowired
     private UsersMapper usersMapper;
 
-    @GetMapping
+    @GetMapping("/user")
     public Set<UsersDTO> getUsers() {return usersServices.getUsers();}
 
-    @PostMapping
+    @PostMapping("/user")
     public UsersDTO newUser(@RequestBody UsersDTO postUser) {
         return usersServices.save(postUser);}
+
+    @PostMapping("/connect")
+    public String connectUser(@RequestBody UsersDTO connectUser) {
+        return usersServices.connectUser(connectUser);
+    }
 }
