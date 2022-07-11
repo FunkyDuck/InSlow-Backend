@@ -21,6 +21,5 @@ public class UsersController {
 
     @PostMapping
     public UsersDTO newUser(@RequestBody UsersDTO postUser) {
-        System.out.println("echo 1");
         return usersServices.save(postUser);}
 }
