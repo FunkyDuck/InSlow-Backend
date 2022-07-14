@@ -61,29 +61,31 @@ public class UsersServices {
         );
     }
 
+    public boolean getUserByMail(String mail){
+        if(usersRepository.findByMail(mail) != null)
+            return true;
+        return false;
+    }
+
+    public boolean getUserByName(String name){
+        if(usersRepository.findByName(name) != null)
+            return true;
+        return false;
+    }
+
     public String connectUser(UsersDTO usersDTO){
         Users user = usersRepository.findByMail(usersDTO.getMail());
         if(user!=null){
             try {
                 if(this.encoder.matches(usersDTO.getPassword(),user.getPassword())) {
                     System.out.println(user);
-//                    return user.toString();
-//                    Authentication authentication = new UsernamePasswordAuthenticationToken(user.getName(), usersDTO.getPassword());
-//                    authentication = authManager.authenticate((authentication));
-
-//                    return properties.getPrefix() + JWT.create()
-//                            .withSubject(user.getName())
-//                            .withIssuedAt(new Date())
-//                            .withExpiresAt(new Date(System.currentTimeMillis() + properties.getExpires()))
-//                            .withClaim("role",user.getRole().toString())
-//                            .sign(Algorithm.HMAC512(properties.getSecret()));
 
                     return JWT.create()
                             .withSubject(user.getName())
                             .withIssuedAt(new Date())
-                            .withExpiresAt(new Date(System.currentTimeMillis() + (7200 * 20000)))
+                            .withExpiresAt(new Date(System.currentTimeMillis() + (86400000))) // 86400000 = 24h
                             .withClaim("role",user.getRole().toString())
-                            .withClaim("bid","ule")
+                            .withClaim("uId",user.getUserId())
                             .sign(Algorithm.HMAC512("properties.getSecret()"));
                 }
             }catch (Exception e){
