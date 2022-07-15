@@ -62,8 +62,10 @@ public class UsersServices {
     }
 
     public boolean getUserByMail(String mail){
-        if(usersRepository.findByMail(mail) != null)
+        System.out.println(usersRepository.findByMail(mail));
+        if(usersRepository.findByMail(mail) != null) {
             return true;
+        }
         return false;
     }
 

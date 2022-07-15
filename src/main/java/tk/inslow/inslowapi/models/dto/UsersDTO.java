@@ -15,6 +15,6 @@ public class UsersDTO {
     private LocalDate birthDate;
     private String country;
     private String city;
-    private Role role;
+    private Role role = Role.USER;
     private LocalDateTime registered;
 }
