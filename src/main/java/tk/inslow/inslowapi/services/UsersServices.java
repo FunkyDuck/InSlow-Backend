@@ -39,16 +39,17 @@ public class UsersServices {
     }
 
     public String save(UsersDTO usersDTO){
+        System.out.println(usersDTO.toString());
         usersDTO.setName(usersDTO.getName().replace(" ",""));
         usersDTO.setPassword(this.encoder.encode(usersDTO.getPassword()));
+        usersMapper.toDto(usersRepository.save(usersMapper.toEntity(usersDTO)));
 
-        Users user = usersRepository.findByMail(usersDTO.getMail());
 
         return JWT.create()
-                .withSubject(user.getName())
+                .withSubject(usersDTO.getName())
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + (86400000)))
-                .withClaim("role",user.getRole().toString())
+                .withClaim("role",usersDTO.getRole().toString())
                 .sign(Algorithm.HMAC512("properties.getSecret()"));
     }
 
