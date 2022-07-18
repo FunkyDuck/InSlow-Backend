@@ -24,13 +24,13 @@ public class UsersController {
     public Set<UsersDTO> getUsers() {return usersServices.getUsers();}
 
     @PostMapping("/user")
-    public UsersDTO newUser(@RequestBody UsersDTO postUser) {
+    public String newUser(@RequestBody UsersDTO postUser) {
         System.out.println(postUser);
         return usersServices.save(postUser);}
 
     @PostMapping("/user/connect")
     public String connectUser(@RequestBody UsersDTO connectUser) {
-        return usersServices.connectUser(connectUser);
+        return "{\"JWT\": \"" + usersServices.connectUser(connectUser) + "\"}";
     }
 
     @ResponseBody
