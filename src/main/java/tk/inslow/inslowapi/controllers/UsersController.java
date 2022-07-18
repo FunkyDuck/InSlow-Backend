@@ -26,7 +26,7 @@ public class UsersController {
     @PostMapping("/user")
     public String newUser(@RequestBody UsersDTO postUser) {
         System.out.println(postUser);
-        return usersServices.save(postUser);}
+        return "{\"JWT\": \"" + usersServices.save(postUser) + "\"}";}
 
     @PostMapping("/user/connect")
     public String connectUser(@RequestBody UsersDTO connectUser) {
