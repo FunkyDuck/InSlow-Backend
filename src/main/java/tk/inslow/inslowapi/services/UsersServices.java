@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tk.inslow.inslowapi.config.JwtProperties;
+import tk.inslow.inslowapi.config.JwtProvider;
 import tk.inslow.inslowapi.mappers.UsersMapper;
 import tk.inslow.inslowapi.models.dto.UsersDTO;
 import tk.inslow.inslowapi.models.entities.Users;
@@ -33,9 +34,13 @@ public class UsersServices {
     @Autowired
     private final JwtProperties properties;
 
-    public UsersServices(AuthenticationManager authManager, JwtProperties properties){
+    @Autowired
+    private final JwtProvider provider;
+
+    public UsersServices(AuthenticationManager authManager, JwtProperties properties, JwtProvider provider){
         this.authManager = authManager;
         this.properties = properties;
+        this.provider = provider;
     }
 
     public String save(UsersDTO usersDTO){
@@ -44,13 +49,7 @@ public class UsersServices {
         usersDTO.setPassword(this.encoder.encode(usersDTO.getPassword()));
         usersMapper.toDto(usersRepository.save(usersMapper.toEntity(usersDTO)));
 
-
-        return JWT.create()
-                .withSubject(usersDTO.getName())
-                .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + (86400000)))
-                .withClaim("role",usersDTO.getRole().toString())
-                .sign(Algorithm.HMAC512("properties.getSecret()"));
+        return provider.createToken(usersDTO.getName(), usersDTO.getRole());
     }
 
 
@@ -67,7 +66,17 @@ public class UsersServices {
         );
     }
 
-    public boolean getUserByMail(String mail){
+    public UsersDTO getUserByName(String name){
+        UsersDTO user = usersMapper.toDto(
+                usersRepository.findByName(name)
+        );
+
+        user.setPassword("");
+
+        return user;
+    }
+
+    public boolean checkMail(String mail){
         System.out.println(usersRepository.findByMail(mail));
         if(usersRepository.findByMail(mail) != null) {
             return true;
@@ -75,7 +84,7 @@ public class UsersServices {
         return false;
     }
 
-    public boolean getUserByName(String name){
+    public boolean checkName(String name){
         if(usersRepository.findByName(name) != null)
             return true;
         return false;
@@ -88,13 +97,7 @@ public class UsersServices {
                 if(this.encoder.matches(usersDTO.getPassword(),user.getPassword())) {
                     System.out.println(user);
 
-                    return JWT.create()
-                            .withSubject(user.getName())
-                            .withIssuedAt(new Date())
-                            .withExpiresAt(new Date(System.currentTimeMillis() + (86400000))) // 86400000 = 24h
-                            .withClaim("role",user.getRole().toString())
-//                            .withClaim("uId",user.getUserId())
-                            .sign(Algorithm.HMAC512("properties.getSecret()"));
+                    return provider.createToken(user.getName(), user.getRole());
                 }
             }catch (Exception e){
                 return e.toString();

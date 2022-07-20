@@ -33,14 +33,19 @@ public class UsersController {
         return "{\"JWT\": \"" + usersServices.connectUser(connectUser) + "\"}";
     }
 
+    @GetMapping("/user/{name}")
+    public UsersDTO getUserByName(@PathVariable("name") String name){
+        return usersServices.getUserByName(name);
+    }
+
     @ResponseBody
     @GetMapping("/user/check/{dataType}/{data}")
     public String checkUserNameOrMail(@PathVariable("dataType") String dataType, @PathVariable("data") String data) {
         String str = "{\"exist\" : ";
         if(dataType.equals("mail"))
-            str +=usersServices.getUserByMail(data);
+            str +=usersServices.checkMail(data);
         else if (dataType.equals("name"))
-            str += usersServices.getUserByName(data);
+            str += usersServices.checkName(data);
         else
             str += false;
         str += "}";
