@@ -11,15 +11,22 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, jsr250Enabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig extends GlobalMethodSecurityConfiguration {
     @Bean
     public PasswordEncoder encoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    private final JwtProvider provider;
+
+    public SecurityConfig(JwtProvider provider) {
+        this.provider = provider;
     }
 
     @Bean
@@ -30,8 +37,13 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration {
         http.headers()
                 .frameOptions().sameOrigin();
 
+        http.addFilterBefore(new JwtAuthorizationFilter(provider), UsernamePasswordAuthenticationFilter.class);
+
         http.authorizeRequests()
+                .antMatchers("/posts").authenticated()
                 .anyRequest().permitAll();
+
+        http.cors();
 
         System.out.println("Security Config Ended !");
 

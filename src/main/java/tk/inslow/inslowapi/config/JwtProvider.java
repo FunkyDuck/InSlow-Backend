@@ -29,11 +29,6 @@ public class JwtProvider {
         this.service = service;
     }
 
-//    @Bean
-//    public UserDetailsService service() {
-//        return super.service();
-//    }
-
     public String createToken(String username, Role roles){
         String token = JWT.create()
                 .withSubject(username)
@@ -41,14 +36,15 @@ public class JwtProvider {
                 .withClaim("roles", String.valueOf(roles))
                 .sign(Algorithm.HMAC512(JWT_KEY));
 
-        return TOKEN_PREFIX + token;
+        return TOKEN_PREFIX.substring(1) + token;
     }
 
     public String resolveToken(HttpServletRequest request) {
         String token = request.getHeader(HEADER_KEY);
-
         if(token != null && token.startsWith(TOKEN_PREFIX)){
-            return token.substring(TOKEN_PREFIX.length());
+            token = token.substring(TOKEN_PREFIX.length());
+            token = token.substring(0,token.length()-1);
+            return token;
         }
 
         return null;
@@ -62,6 +58,7 @@ public class JwtProvider {
 
             String username = decodedJWT.getSubject();
             Date expiresAt = decodedJWT.getExpiresAt();
+            System.out.println(username);
 
             service.loadUserByUsername(username);
 

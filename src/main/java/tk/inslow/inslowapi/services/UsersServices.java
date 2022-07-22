@@ -95,8 +95,6 @@ public class UsersServices {
         if(user!=null){
             try {
                 if(this.encoder.matches(usersDTO.getPassword(),user.getPassword())) {
-                    System.out.println(user);
-
                     return provider.createToken(user.getName(), user.getRole());
                 }
             }catch (Exception e){

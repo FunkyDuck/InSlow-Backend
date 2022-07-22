@@ -21,8 +21,8 @@ public class PostsServices {
     @Autowired
     private UsersMapper usersMapper;
 
-    public PostsDTO save(PostsDTO postsDTO, String name){
-        Users users = usersRepository.findByName(name);
+    public PostsDTO save(PostsDTO postsDTO){
+        Users users = usersRepository.findByName(postsDTO.getUserName());
         Posts posts = postsMapper.toEntity(postsDTO);
         posts.setUsers(users);
         return postsMapper.toDto(postsRepository.save(posts));

@@ -14,7 +14,7 @@ public class Posts {
     private long postId;
     private String media;
     private String content;
-    @NotNull
+//    @NotNull
     @CreationTimestamp
     private LocalDateTime posted;
     @ManyToOne @JoinColumn(name="idUser")
